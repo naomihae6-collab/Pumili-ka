@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Video Gatekeeper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0d1117; color: white; font-family: sans-serif; }
+        #btn-yes { transition: transform 0.2s ease-in-out; transform-origin: center; }
+        #btn-no { transition: transform 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- ========================================================================= -->
+    <!-- GATEKEEPER SCREEN OVERLAY -->
+    <!-- ========================================================================= -->
+    <div id="gatekeeper-screen" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center p-6 text-center z-50">
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-4">Pumili ka ng isa!!</h1>
+        <p id="subtext" class="text-slate-400 mb-8 text-lg">virus talaga to guys</p>
+
+        <!-- Dynamic Action Buttons -->
+        <div class="flex items-center justify-center gap-6 min-h-[100px]">
+            <!-- YES BUTTON -->
+            <button id="btn-yes" onclick="enterPortal()" type="button" class="px-8 py-4 bg-green-600 hover:bg-green-500 font-bold text-xl rounded-xl shadow-lg cursor-pointer z-20">
+                YES
+            </button>
+
+            <!-- NO BUTTON -->
+            <button id="btn-no" onclick="growYesButton()" type="button" class="px-8 py-4 bg-red-600 hover:bg-red-500 font-bold text-xl rounded-xl shadow-lg cursor-pointer z-10">
+                NO
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MAIN VIDEO AREA -->
+    <!-- ========================================================================= -->
+    <div id="main-view" style="display: none;" class="w-full max-w-4xl flex flex-col items-center space-y-4">
+        
+        <h2 class="text-2xl font-bold text-purple-400">PALONG PALO KANA BARTO</h2>
+
+        <div class="w-full bg-black rounded-2xl overflow-hidden border-2 border-purple-500/30 shadow-2xl">
+            <!-- ========================================================================= -->
+            <!-- ⬇️ YOUR VIDEO FILE GOES RIGHT HERE IN THE 'src' ATTRIBUTE BELOW ⬇️ -->
+            <!-- ========================================================================= -->
+            <video id="myVideo" controls class="w-full max-h-[70vh]">
+                <!-- LINE 47: Replace 'received_2001704273851461.mp4' with your file name if changed -->
+                <source src="C:\Users\leeat\OneDrive\Desktop\HTML EXPERIMENTS\received_2001704273851461.mp4">
+                Your browser does not support the video tag.
+            </video>
+            <!-- ========================================================================= -->
+        </div>
+
+        <button onclick="lockPortal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm text-slate-300 rounded-lg border border-slate-700">
+            Lock Portal Again
+        </button>
+    </div>
+
+    <script>
+        let yesScale = 1;
+        let noClicks = 0;
+
+        const messages = [
+            "talaga ba??",
+            "ayusin mo plsss",
+            "WOIII",
+            "PINDUTIN MO NA PLEASEEE",
+            "GRRRR"
+        ];
+
+        // Grows the YES button when NO is clicked
+        function growYesButton() {
+            noClicks++;
+            yesScale += 0.5; // Makes Yes 50% larger each time
+
+            const yesBtn = document.getElementById('btn-yes');
+            if (yesBtn) {
+                yesBtn.style.transform = `scale(${yesScale})`;
+            }
+
+            const subtext = document.getElementById('subtext');
+            if (subtext) {
+                const msgIndex = Math.min(noClicks - 1, messages.length - 1);
+                subtext.innerText = messages[msgIndex];
+                subtext.style.color = '#FF0000'; // Red highlight
+            }
+        }
+
+        // Bulletproof transition: Hides gatekeeper & shows video
+        function enterPortal() {
+            // 1. Force hide the gatekeeper overlay
+            const gatekeeper = document.getElementById('gatekeeper-screen');
+            if (gatekeeper) {
+                gatekeeper.style.display = 'none';
+            }
+
+            // 2. Force reveal the video container
+            const mainView = document.getElementById('main-view');
+            if (mainView) {
+                mainView.style.display = 'flex';
+            }
+
+            // 3. Play video automatically
+            const video = document.getElementById('myVideo');
+            if (video) {
+                video.play().catch(function(err) {
+                    console.log("Autoplay paused by browser policy:", err);
+                });
+            }
+        }
+
+        // Resets portal back to gatekeeper
+        function lockPortal() {
+            const mainView = document.getElementById('main-view');
+            if (mainView) {
+                mainView.style.display = 'none';
+            }
+
+            const gatekeeper = document.getElementById('gatekeeper-screen');
+            if (gatekeeper) {
+                gatekeeper.style.display = 'flex';
+            }
+
+            // Reset Yes button scale
+            yesScale = 1;
+            noClicks = 0;
+            const yesBtn = document.getElementById('btn-yes');
+            if (yesBtn) yesBtn.style.transform = 'scale(1)';
+
+            const subtext = document.getElementById('subtext');
+            if (subtext) {
+                subtext.innerText = "Choose an option to continue...";
+                subtext.style.color = '#94a3b8';
+            }
+
+            const video = document.getElementById('myVideo');
+            if (video) {
+                video.pause();
+            }
+        }
+    </script>
+</body>
+</html>
